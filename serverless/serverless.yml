@@ -1,0 +1,111 @@
+service: rekon
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.9
+
+  environment: 
+    BUCKET_POLLY: audiobucketpd
+
+  # Uncomment this section if you want to configure cors for your URL
+  httpApi:
+    cors:
+      allowedOrigins:
+        - https://compass-sprint-008-bucket.s3.amazonaws.com
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+        - Access-Control-Allow-Headers
+        - Access-Control-Allow-Origin
+      allowedMethods:
+        - GET
+        - POST
+      allowCredentials: true
+      exposedResponseHeaders:
+        - Special-Response-Header
+      maxAge: 6000
+
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - 's3:ListBucket'
+            - 's3:GetObject'
+            - 's3:GetObjectAcl'
+            - 's3:PutObject'
+            - 's3:PutObjectAcl'
+            - 's3:GetBucketLocation'
+
+          Resource: '*'
+
+        - Effect: "Allow"
+          Action:
+            - "rekognition:*"
+          Resource: "*" 
+
+        # allow SynthesizeSpeech for Polly
+        - Effect: Allow
+          Action:
+            - 'polly:SynthesizeSpeech'
+          Resource: '*'
+
+functions:
+
+  v1Description:
+    handler: rekognition.rekognition_v1_description
+    events:
+      - httpApi:
+          path: /v1
+          method: get
+
+  v1Rekognition:
+    handler: rekognition.rekognition_v1
+    events:
+      - httpApi:
+          path: /rekognition/v1
+          method: post     
+
+  v1Polly:
+    handler: polly.polly_v1
+    events:
+      - httpApi:
+          path: /polly
+          method: post   
+
+  v1Story:
+    handler: create_story.create_story_v1
+    events:
+      - httpApi:
+          path: /story
+          method: post
+    timeout: 29
+# resources:
+#   Resources:
+#     MyBucket:
+#       Type: 'AWS::S3::Bucket'
+#       Properties:
+#         BucketName: audiobucketpd
+#         PublicAccessBlockConfiguration:
+#           BlockPublicAcls: false
+#           BlockPublicPolicy: false
+#           IgnorePublicAcls: false
+#           RestrictPublicBuckets: false
+#     MyBucketPolicy:
+#       Type: 'AWS::S3::BucketPolicy'
+#       Properties:
+#         Bucket:
+#           Ref: 'MyBucket'
+#         PolicyDocument:
+#           Version: '2012-10-17'
+#           Statement:
+#             - Effect: Allow
+#               Principal: '*'
+#               Action: 's3:GetObject'
+#               Resource:
+#                 Fn::Join:
+#                   - ''
+#                   - - 'arn:aws:s3:::'
+#                     - Ref: 'MyBucket'
+#                     - '/*'

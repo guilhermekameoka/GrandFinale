@@ -15,37 +15,65 @@
 
 <body>
     <section id="main">
+        <div id="header">
+            <div class="options">
+
+            </div>
+        </div>
         <div id="home">
             <div id="s1">
                 <div id="content">
                     <h1>
                         Crie
                         <span style="
-                        font-size: 45px;
-                        line-height: 18px;
-                        letter-spacing: -4.05px;">contos</span>
+                        font-size: 3.125vw;
+                        line-height: 1.25vw;
+                        letter-spacing: -0.28125vw;">contos</span>
                         <span style="
-                        font-size: 45px;
-                        line-height: 18px;
-                        letter-spacing: -0.45px;">através</span>
+                        font-size: 3.125vw;
+                        line-height: 1.25vw;
+                        letter-spacing: -0.03125vw;">através</span>
                         <span style="
-                        font-size: 40px;
-                        line-height: 18px;
-                        letter-spacing: -0.4px;">de seus</span>
+                        font-size: 2.777vw;
+                        line-height: 1.25vw;
+                        letter-spacing: -0.02777vw">de seus</span>
                         <span style="
-                        font-size: 78px;
-                        line-height: 18px;
-                        letter-spacing: -6.24px;">Desenhos</span>
+                        font-size: 5.416vw;
+                        line-height: 1.25vw;
+                        letter-spacing: -0,4333vw;">Desenhos</span>
                     </h1>
-                    <button id="B1">
+                    <button class="btns" id="B1">
                         <p id="text">COMECE POR AQUI</p>
                     </button>
                 </div>
 
-                <img src="./static/imgs/png/character.png" alt="">
+                <img id="character" src="./static/imgs/png/character.png" alt="">
             </div>
         </div>
     </section>
+
+    <div id="modal">
+        <div id="content">
+
+            <div id="text">
+                <h1>
+                    PASSO A PASSO
+                </h1>
+
+                <ol id="list">
+                    <li class="item">Clique no bot no canto inferior direito da página.</li>
+                    <li class="item">Invoque o bot com a mensagem "Olá".</li>
+                    <li class="item">Selecione umas das opções oferecidas pelo bot</li>
+                </ol>
+            </div>
+            <button class="btns" id="close">
+                <p id="text">FECHAR</p>
+            </button>
+        </div>
+
+    </div>
+
+    <script src="./static/js/functions.js"></script>
 </body>
 
 </html>

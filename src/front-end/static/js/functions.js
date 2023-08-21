@@ -1,14 +1,24 @@
-const textoEmImagens = document.getElementById('op1');
-const response = document.getElementById('response');
+const comecePorAqui = document.getElementById('B1');
+const closeButton = document.getElementById('close');
+const modal = document.getElementById('modal');
 
-function visibility() {
+
+comecePorAqui.addEventListener("click", function(){
     console.log('visibility');
 
-    if (response.style.display == 'none') {
-        response.style.display = 'block';
+    if (modal.style.display == 'none') {
+        modal.style.display = 'block';
     } else{
-        response.style.display = 'block';
-    }
+        modal.style.display = 'none';
+    }   
+});
 
-    
-}
+closeButton.addEventListener("click", function(){
+    console.log('close');
+
+    if (modal.style.display == 'block') {
+        modal.style.display = 'none';
+    } else{
+        modal.style.display = 'none';
+    }  
+});

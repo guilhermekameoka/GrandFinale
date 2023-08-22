@@ -70,10 +70,23 @@
                 <p id="text">FECHAR</p>
             </button>
         </div>
-
     </div>
 
+    <!-- Items -->
     <script src="./static/js/functions.js"></script>
+
+
+    <!-- Kommunicate -->
+    <script>
+        (function(d, m){
+            var kommunicateSettings = 
+                {"appId":"91f2533a8c2d14bd8c1b58cbe468092c","popupWidget":true,"automaticChatOpenOnNavigation":true, "voiceInput":true,"voiceInputTimeout": 5,"language": "pt-BR"};
+            var s = document.createElement("script"); s.type = "text/javascript"; s.async = true;
+            s.src = "https://widget.kommunicate.io/v2/kommunicate.app";
+            var h = document.getElementsByTagName("head")[0]; h.appendChild(s);
+            window.kommunicate = m; m._globals = kommunicateSettings;
+        })(document, window.kommunicate || {});
+      </script>
 </body>
 
 </html>

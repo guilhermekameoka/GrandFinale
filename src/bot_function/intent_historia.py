@@ -3,6 +3,8 @@ import urllib3
 from functions import *
 import random
 
+import boto3
+
     
 #Checks for slots, validates values and return cards in case values are not valid
 def validate_type_card(event, slots):
@@ -38,6 +40,8 @@ def ObterHistoria_handler(event):
     intent = event['sessionState']['intent']['name']
     slots = event['sessionState']['intent']['slots']
     
+    print(json.dumps(event))
+
     response = {}
 
     validation = validate_type_card(event, slots)
@@ -62,17 +66,18 @@ def ObterHistoria_handler(event):
         http = urllib3.PoolManager()
         url = "https://4fa70odtzi.execute-api.us-east-1.amazonaws.com/rekognition/v1"
 
+        imageName = "imageTest2.jpg"
+
         Headers = {'Content-Type': 'application/json'}
         payload = {
             "bucket": "sprint8pd",
             "imageURL": imageURL,
-            "imageName": "imageTest2.jpg"
+            "imageName": imageName
         }
 
         encoded_body = json.dumps(payload)
         res = http.request('POST', url, body=encoded_body, headers=Headers)
         respo = ''
-
 
         if res.status == 200:
             respo = json.loads(res.data)
@@ -102,6 +107,13 @@ def ObterHistoria_handler(event):
         id_model = 'gpt-3.5-turbo'
         phrase = f'crie uma história infantil bem curta, máximo de 500 caracteres e não ultrapasse 80 palavras, que contenha os seguintes elementos: {label1},{label2},{label3},{label4}'
 
+        # client = boto3.client('lambda')
+        # client.invoke(
+        #     FunctionName='bot_async',
+        #     InvocationType='Event',
+        #     Payload = bytes(json.dumps({'body': event}), encoding='utf-8')
+        # )
+        
         story = create_story_function(phrase, id_model)
 
         voice = ['Camila','Thiago']
@@ -124,15 +136,16 @@ def ObterHistoria_handler(event):
                 {
                     "contentType":"CustomPayload",
                     "content": json.dumps(audio_kommunicate)
-                },
-                {
-                    "contentType":"PlainText",
-                    "content": "Posso ajudar em algo mais?"
                 }
 
             ]
         }
         sessionState = close_session(intent, slots) 
         response.update(sessionState)
+
+        final_message = end_card(" ")
+        final_message["imageResponseCard"]['title'] = "O que você quer fazer?"
+        response['messages'].append(final_message)
     
+    print(json.dumps(event))
     return response

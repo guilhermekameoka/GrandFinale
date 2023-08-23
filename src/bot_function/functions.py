@@ -8,6 +8,14 @@ config.sections()
 config.read('bot.conf')
 
 KEY_API=config['BOT']['KEY_API']
+BUCKET_IMAGES = config['BOT']['BUCKET_IMAGES']
+
+def json_bucket_images (json_info):
+    for key in json_info:
+        for value in json_info[key].values():
+            value['link'] = value['link'].replace('meu_bucket', BUCKET_IMAGES)
+    
+    return json_info
 
 #checks if there are missing slots and returns the slot to elicit
 def check_missing_slot(slots, invalidSlot, contentType, content, force_return = False):
@@ -126,19 +134,28 @@ def close_session(intent, slots):
     }
     return sessionState
 
-def change_intent(intent):
-    nextState = {
-        "proposedNextState": {
-            "dialogAction": {
-                "type": "ElicitIntent"
-            },
-            "intent": {
-                "name": intent,
-            }
-        }
-    }
-    return nextState
 
+def end_card(title):
+
+    rescard_title = title
+    rescard_buttons = [
+        {
+            "text": 'Desenho - Foto',
+            "value": 'desenho'
+        },
+        {
+            "text": 'Cartões',
+            "value": 'cartões'
+        },
+        {
+            "text": 'Expressar',
+            "value": 'expressar'
+        },
+    ]
+    imageUrl = 'https://sprint8pd.s3.amazonaws.com/bot.jpg'
+    return (build_message("ImageResponseCard", rescard_title, rescard_buttons, imageUrl))
+
+    
 def create_story_function (phrase, id_model):
 
     http = urllib3.PoolManager()

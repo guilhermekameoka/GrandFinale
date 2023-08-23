@@ -1,86 +1,47 @@
 import json
-import urllib3
 from functions import *
 import random
-from unicodedata import normalize
-
 
     
 #Checks for slots, validates values and return cards in case values are not valid
 def validate_type_card(event, slots):
 
-    valids = ['gato', 'cachorro', 'abelha', 'galinha', 'chuvoso','ensolarado','nublado','trovejando','aviao','bicicleta','carro','navio','foguete','espaco','floresta','mar','praia']
-
-
-    protagonists = {
-        'gato':'https://sprint8pd.s3.amazonaws.com/gato.jpg',
-        'cachorro':'https://sprint8pd.s3.amazonaws.com/cachorro.jpg',
-        'abelha': 'https://sprint8pd.s3.amazonaws.com/abelha.jpg',
-        'galinha': 'https://sprint8pd.s3.amazonaws.com/galinha.jpg'
-    }
-
-    clima = {
-        'chuvoso':'https://sprint8pd.s3.amazonaws.com/clima/chuvoso.jpg',
-        'ensolarado':'https://sprint8pd.s3.amazonaws.com/clima/ensolarado.jpg',
-        'nublado':'https://sprint8pd.s3.amazonaws.com/clima/nublado.jpg',
-        'trovejando':'https://sprint8pd.s3.amazonaws.com/clima/trovejando.jpg'
-    }
-
-    veiculo = {
-        'avião':'https://sprint8pd.s3.amazonaws.com/veiculo/aviao.jpg',
-        'bicicleta':'https://sprint8pd.s3.amazonaws.com/veiculo/bicicleta.jpg',
-        'carro':'https://sprint8pd.s3.amazonaws.com/veiculo/carro.jpg',
-        'navio':'https://sprint8pd.s3.amazonaws.com/veiculo/navio.jpg',
-        'foguete':'https://sprint8pd.s3.amazonaws.com/veiculo/foguete.jpg'
-    }
-
-    local = {
-        'espaço':'https://sprint8pd.s3.amazonaws.com/local/espaco.jpg',
-        'floresta':'https://sprint8pd.s3.amazonaws.com/local/floresta.jpg',
-        'mar':'https://sprint8pd.s3.amazonaws.com/local/mar.jpg',
-        'praia':'https://sprint8pd.s3.amazonaws.com/local/praia.jpg'
-
-    }
-
+    valores = json_bucket_images(json.load(open('json_files/intent_historia_cards_info.json')))
 
     #returns invalidSlot if it's missing
-    isMissing = check_missing_slot(slots, "card1", "PlainText", "Quem será o protagonista da história?") 
+    isMissing = check_missing_slot(slots, "card1", "PlainText", "Escolha o protagonista da história, ou escreva um nome!") 
 
     if isMissing: 
 
-        for key in protagonists:
+        for key in valores['protagonists']:
 
             rescard_title = ' '
             rescard_buttons = [
                 {
-                    "text": key,
-                    "value": normalize('NFKD', key).encode('ASCII','ignore').decode('ASCII')
+                    "text": valores['protagonists'][key]['texto'],
+                    "value": key
                 }
             ]
-            imageUrl = protagonists[key]
+            imageUrl = valores['protagonists'][key]['link']
             isMissing['messages'].append(build_message("ImageResponseCard", rescard_title, rescard_buttons, imageUrl))
 
         return isMissing
     
-    # Validating the inputs
-    # if slots['card1']['value']['originalValue'] not in valids:
-    #     response = build_response('card1', 'Selecione um cartão')
-    #     return response
     
     isMissing = check_missing_slot(slots, "card2", "PlainText", "Como está o dia?") 
 
     if isMissing: 
 
-        for key in clima:
+        for key in valores['clima']:
 
             rescard_title = ' '
             rescard_buttons = [
                 {
-                    "text": key,
-                    "value": normalize('NFKD', key).encode('ASCII','ignore').decode('ASCII')
+                    "text": valores['clima'][key]['texto'],
+                    "value": key
                 }
             ]
-            imageUrl = clima[key]
+            imageUrl = valores['clima'][key]['link']
             isMissing['messages'].append(build_message("ImageResponseCard", rescard_title, rescard_buttons, imageUrl))
 
         return isMissing
@@ -89,16 +50,16 @@ def validate_type_card(event, slots):
 
     if isMissing: 
 
-        for key in veiculo:
+        for key in valores['veiculo']:
 
             rescard_title = ' '
             rescard_buttons = [
                 {
-                    "text": key,
-                    "value": normalize('NFKD', key).encode('ASCII','ignore').decode('ASCII')
+                    "text": valores['veiculo'][key]['texto'],
+                    "value": key
                 }
             ]
-            imageUrl = veiculo[key]
+            imageUrl = valores['veiculo'][key]['link']
             isMissing['messages'].append(build_message("ImageResponseCard", rescard_title, rescard_buttons, imageUrl))
 
         return isMissing
@@ -107,16 +68,16 @@ def validate_type_card(event, slots):
 
     if isMissing: 
 
-        for key in local:
+        for key in valores['local']:
 
             rescard_title = ' '
             rescard_buttons = [
                 {
-                    "text": key,
-                    "value": normalize('NFKD', key).encode('ASCII','ignore').decode('ASCII')
+                    "text": valores['local'][key]['texto'],
+                    "value": key
                 }
             ]
-            imageUrl = local[key]
+            imageUrl = valores['local'][key]['link']
             isMissing['messages'].append(build_message("ImageResponseCard", rescard_title, rescard_buttons, imageUrl))
 
         return isMissing
@@ -172,14 +133,14 @@ def ObterHistoriaCards_handler(event):
                 {
                     "contentType":"CustomPayload",
                     "content": json.dumps(audio_kommunicate)
-                },
-                {
-                    "contentType":"PlainText",
-                    "content": "Posso ajudar em algo mais?"
                 }
             ]
         }
         sessionState = close_session(intent, slots) 
         response.update(sessionState)
+
+        final_message = end_card(" ")
+        final_message["imageResponseCard"]['title'] = "O que você quer fazer?"
+        response['messages'].append(final_message)
     
     return response

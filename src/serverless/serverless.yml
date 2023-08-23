@@ -6,7 +6,7 @@ provider:
   runtime: python3.9
 
   environment: 
-    BUCKET_POLLY: audiobucketpd
+    BUCKET_POLLY: audiobucket
 
   # Uncomment this section if you want to configure cors for your URL
   httpApi:

@@ -7,14 +7,11 @@ valores = json_bucket_images(json.load(open('json_files/intent_expressar_info.js
 #Checks for slots, validates values and return cards in case values are not valid
 def validate_type_card(event, slots):
 
-
-    #returns invalidSlot if it's missing
+    #slot "voz" check and validation
     isMissing = check_missing_slot(slots, "voz", "PlainText", "Escolha sua voz") 
 
     if isMissing: 
-
         for key in valores['vozes']:
-
             rescard_title = ' '
             rescard_buttons = [
                 {
@@ -24,19 +21,16 @@ def validate_type_card(event, slots):
             ]
             imageUrl = valores['vozes'][key]['link']
             isMissing['messages'].append(build_message("ImageResponseCard", rescard_title, rescard_buttons, imageUrl))
-
         return isMissing
     
     if slots['voz']['value']['originalValue'] not in valores['vozes'].keys():
         return {'valid':False}
     
-
+    #slot "desejo" check and validation
     isMissing = check_missing_slot(slots, "desejo", "PlainText", "O que você deseja expressar?") 
 
     if isMissing: 
-
         for key in valores['desejos']:
-
             rescard_title = ' '
             rescard_buttons = [
                 {
@@ -46,21 +40,18 @@ def validate_type_card(event, slots):
             ]
             imageUrl = valores['desejos'][key]['link']
             isMissing['messages'].append(build_message("ImageResponseCard", rescard_title, rescard_buttons, imageUrl))
-
         return isMissing
     
     desejo_opcao = str(slots['desejo']['value']['originalValue'])
     
-
     if desejo_opcao not in valores['desejos'].keys():
         return {'valid': False}
 
+    #slot "escolha" check and validation
     isMissing = check_missing_slot(slots, "escolha", "PlainText", "O que você quer dizer?") 
 
     if isMissing: 
-
         for key in valores[desejo_opcao]:
-
             rescard_title = ' '
             rescard_buttons = [
                 {
@@ -70,7 +61,6 @@ def validate_type_card(event, slots):
             ]
             imageUrl = valores[desejo_opcao][key]['link']
             isMissing['messages'].append(build_message("ImageResponseCard", rescard_title, rescard_buttons, imageUrl))
-
         return isMissing
     
     if slots['escolha']['value']['originalValue'] not in valores[desejo_opcao].keys():

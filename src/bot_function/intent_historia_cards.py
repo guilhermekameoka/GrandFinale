@@ -1,6 +1,7 @@
 import json
+import boto3
 from functions import *
-import random
+import os
 
     
 #Checks for slots, validates values and return cards in case values are not valid
@@ -8,13 +9,11 @@ def validate_type_card(event, slots):
 
     valores = json_bucket_images(json.load(open('json_files/intent_historia_cards_info.json')))
 
-    #returns invalidSlot if it's missing
+    #card1 "protagonists" check and validation
     isMissing = check_missing_slot(slots, "card1", "PlainText", "Escolha o protagonista da história, ou escreva um nome!") 
 
     if isMissing: 
-
         for key in valores['protagonists']:
-
             rescard_title = ' '
             rescard_buttons = [
                 {
@@ -24,16 +23,16 @@ def validate_type_card(event, slots):
             ]
             imageUrl = valores['protagonists'][key]['link']
             isMissing['messages'].append(build_message("ImageResponseCard", rescard_title, rescard_buttons, imageUrl))
-
         return isMissing
     
-    
+    if slots['card1']['value']['originalValue'] not in valores['protagonists'].keys():
+        return {'valid': False}
+
+    #card2 "clima" check and validation
     isMissing = check_missing_slot(slots, "card2", "PlainText", "Como está o dia?") 
 
     if isMissing: 
-
         for key in valores['clima']:
-
             rescard_title = ' '
             rescard_buttons = [
                 {
@@ -43,15 +42,16 @@ def validate_type_card(event, slots):
             ]
             imageUrl = valores['clima'][key]['link']
             isMissing['messages'].append(build_message("ImageResponseCard", rescard_title, rescard_buttons, imageUrl))
-
         return isMissing
     
+    if slots['card2']['value']['originalValue'] not in valores['clima'].keys():
+        return {'valid': False}
+
+    #card3 "veiculo" check and validation
     isMissing = check_missing_slot(slots, "card3", "PlainText", "Vamos usar um veículo?") 
 
     if isMissing: 
-
         for key in valores['veiculo']:
-
             rescard_title = ' '
             rescard_buttons = [
                 {
@@ -61,15 +61,16 @@ def validate_type_card(event, slots):
             ]
             imageUrl = valores['veiculo'][key]['link']
             isMissing['messages'].append(build_message("ImageResponseCard", rescard_title, rescard_buttons, imageUrl))
-
         return isMissing
     
+    if slots['card3']['value']['originalValue'] not in valores['veiculo'].keys():
+        return {'valid': False}
+    
+    #card4 "local" check and validation
     isMissing = check_missing_slot(slots, "card4", "PlainText", "Você pensou em um local?") 
 
     if isMissing: 
-
         for key in valores['local']:
-
             rescard_title = ' '
             rescard_buttons = [
                 {
@@ -79,9 +80,10 @@ def validate_type_card(event, slots):
             ]
             imageUrl = valores['local'][key]['link']
             isMissing['messages'].append(build_message("ImageResponseCard", rescard_title, rescard_buttons, imageUrl))
-
         return isMissing
-
+    
+    if slots['card4']['value']['originalValue'] not in valores['local'].keys():
+        return {'valid': False}
 
     return {'valid': True}
 
@@ -112,14 +114,17 @@ def ObterHistoriaCards_handler(event):
         id_model = 'gpt-3.5-turbo'
         phrase = f'crie uma história infantil bem curta, máximo de 500 caracteres e não ultrapasse 80 palavras, que contenha os seguintes elementos: {card1},{card2},{card3},{card4}'
 
-        story = create_story_function(phrase, id_model)
+        #async function ---------------------------------------
+        client = boto3.client('lambda')
+        client.invoke(
+            FunctionName=os.environ['ASYNC_FUNCTION_NAME'],
+            InvocationType='Event',
+            Payload = bytes(json.dumps({'body': event, 'phrase' : phrase, 'id_model' : id_model}), encoding='utf-8')
+        )
+        #------------------------------------------------------
 
-        voice = ['Camila','Thiago']
-        audio_creation = create_audio(story,voice[random.randint(0, len(voice)-1)])
-        audio = audio_creation['url_to_audio']
-
-        audio_kommunicate = {
-            "message": "<audio controls src='"+audio+"'></audio>",
+        image_kommunicate = {
+            "message": "<img src='https://"+os.environ['BUCKET_IMAGES']+".s3.amazonaws.com/loading.gif''><br>Adorei a sua escolha, vamos fazer outra coisa enquanto eu penso em uma história?",
             "platform": "kommunicate",
             "messageType": "html"
         }
@@ -127,12 +132,8 @@ def ObterHistoriaCards_handler(event):
         response = {
             "messages": [
                 {
-                    "contentType":"PlainText",
-                    "content": story
-                },
-                {
                     "contentType":"CustomPayload",
-                    "content": json.dumps(audio_kommunicate)
+                    "content": json.dumps(image_kommunicate)
                 }
             ]
         }

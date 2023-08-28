@@ -10,15 +10,12 @@ def lambda_handler(event, context):
     response = {}
 
     if intent == 'ObterHistoria':
-
         response = ObterHistoria_handler(event)
 
     if intent == 'ObterHistoriaCards':
-
         response = ObterHistoriaCards_handler(event)
 
     if intent == 'ObterExpressar':
-
         response = ObterExpressar_handler(event)
 
     return response

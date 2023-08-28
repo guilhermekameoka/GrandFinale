@@ -3,17 +3,6 @@ import boto3
 import urllib3
 from io import BytesIO
 
-# from functions import event_request
-
-def rekognition_v1_description(event, context):
-    body = {
-        "message": "VISION api version 1."
-    }
-
-    response = {"statusCode": 200, "body": json.dumps(body)}
-
-    return response
-
 
 def rekognition_v1 (event, context):
 
@@ -46,18 +35,14 @@ def event_request(event: dict, detect_type: str, label_field: str) -> dict:
 
         imageName = body_data['imageName']
 
-
         url = imageURL
-
         
         http = urllib3.PoolManager()
         r = http.request('GET', url)
 
-
         s3 = boto3.client('s3')
 
         s3.upload_fileobj(BytesIO(r.data), bucket, imageName)
-
 
         s3file = s3.get_object(Bucket=str(bucket), Key=str(imageName))
 

@@ -52,12 +52,12 @@
         "vozinho": {
             "link": "https://meu_bucket.s3.amazonaws.com/expressar/emocoes/avo-homem.jpg",
             "texto": "vov\u00f4",
-            "valor": "Quero o vov\u00f4!"
+            "valor": "Quero o vov\u00f4"
         },
         "vozinha": {
             "link": "https://meu_bucket.s3.amazonaws.com/expressar/emocoes/avo-mulher.jpg",
             "texto": "vov\u00f3",
-            "valor": "Quero a vov\u00f3!"
+            "valor": "Quero a vov\u00f3"
         },
         "doente": {
             "link": "https://meu_bucket.s3.amazonaws.com/expressar/emocoes/doente.jpg",
@@ -77,7 +77,7 @@
         "sono": {
             "link": "https://meu_bucket.s3.amazonaws.com/expressar/emocoes/sono.jpg",
             "texto": "sono",
-            "valor": "Estou com sono!"
+            "valor": "Estou com sono"
         },
         "triste": {
             "link": "https://meu_bucket.s3.amazonaws.com/expressar/emocoes/triste.jpg",

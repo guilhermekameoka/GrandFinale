@@ -1,9 +1,16 @@
 import json
 import boto3
 import os
-import uuid
 from contextlib import closing
-from common_functions import unique_str_id
+import hashlib
+
+
+def unique_str_id(string: str, last_idx: int = 12) -> str:
+    m = hashlib.md5()
+    string = string.encode('utf-8')
+    m.update(string)
+    unique_name: str = str(int(m.hexdigest(), 16))[0:last_idx]
+    return unique_name
 
 
 def convert_save_audio (received_phrase, type_voice):
